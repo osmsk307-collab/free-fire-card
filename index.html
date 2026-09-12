@@ -3,521 +3,562 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FREE FIRE CARD ACTIVATE</title>
+<title>Free Fire Card Activate</title>
 
 <style>
 *{
+  box-sizing:border-box;
   margin:0;
   padding:0;
-  box-sizing:border-box;
   font-family:Arial,Helvetica,sans-serif;
 }
 
 body{
-  background:#07090f;
+  background:#070b0d;
   color:#fff;
   min-height:100vh;
 }
 
-.topbar{
-  height:62px;
+.header{
+  padding:18px 16px;
   display:flex;
-  align-items:center;
   justify-content:space-between;
-  padding:0 18px;
-  background:#0d111b;
-  border-bottom:1px solid #202737;
-  position:sticky;
-  top:0;
-  z-index:10;
+  align-items:center;
+  border-bottom:1px solid #172326;
+  background:#080d0f;
 }
 
 .logo{
   font-size:18px;
-  font-weight:900;
+  font-weight:800;
   letter-spacing:.5px;
 }
 
 .online{
   font-size:11px;
-  font-weight:bold;
-  color:#19ff91;
-  background:#10271f;
-  padding:7px 11px;
+  color:#45e6a1;
+  border:1px solid #1d6d51;
+  padding:6px 10px;
   border-radius:20px;
 }
 
 .container{
-  width:100%;
   max-width:520px;
   margin:auto;
-  padding:22px 15px 45px;
+  padding:24px 15px 40px;
 }
 
 .hero{
   text-align:center;
-  padding:24px 8px 22px;
+  padding:25px 10px 22px;
 }
 
 .badge{
   display:inline-block;
-  background:#171d2b;
-  border:1px solid #30394d;
-  color:#9da9bd;
-  padding:7px 13px;
-  border-radius:20px;
   font-size:11px;
-  font-weight:bold;
-  margin-bottom:13px;
+  color:#4ee6a3;
+  border:1px solid #1c654b;
+  padding:7px 12px;
+  border-radius:20px;
+  margin-bottom:15px;
 }
 
 .hero h1{
-  font-size:29px;
-  line-height:1.12;
-  font-weight:900;
-}
-
-.hero h1 span{
-  color:#00eaff;
+  font-size:30px;
+  line-height:1.1;
+  margin-bottom:10px;
 }
 
 .hero p{
-  color:#8e98aa;
-  font-size:13px;
-  line-height:1.6;
-  margin-top:10px;
+  color:#8e9b9f;
+  font-size:14px;
+  line-height:1.5;
 }
 
 .card{
-  background:linear-gradient(145deg,#111722,#0c1018);
-  border:1px solid #242d3d;
+  background:#0d1518;
+  border:1px solid #1b2b2f;
   border-radius:18px;
-  padding:19px;
+  padding:18px;
   margin-bottom:15px;
-  position:relative;
-  overflow:hidden;
+  box-shadow:0 10px 35px rgba(0,0,0,.25);
 }
 
-.card:before{
-  content:"";
-  position:absolute;
-  width:120px;
-  height:120px;
-  background:#00eaff;
-  opacity:.04;
-  filter:blur(30px);
-  right:-30px;
-  top:-30px;
+.card.active{
+  border-color:#2bd88e;
 }
 
-.card.gold:before{
-  background:#ffd21c;
+.card-top{
+  display:flex;
+  align-items:center;
+  gap:14px;
 }
 
-.card-title{
+.icon{
+  width:48px;
+  height:48px;
+  border-radius:14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#142329;
+  font-size:23px;
+}
+
+.card h2{
   font-size:17px;
-  font-weight:900;
-  margin-bottom:7px;
-}
-
-.card-sub{
-  color:#8994a7;
-  font-size:12px;
-  margin-bottom:15px;
+  margin-bottom:5px;
 }
 
 .price{
-  font-size:28px;
-  font-weight:900;
-  margin-bottom:15px;
+  color:#4ee6a3;
+  font-size:21px;
+  font-weight:800;
 }
 
-.price small{
-  font-size:11px;
-  color:#7e899b;
-  font-weight:normal;
+.card p{
+  color:#89979b;
+  font-size:12px;
+  margin-top:13px;
 }
 
-.btn{
+.select-btn{
   width:100%;
-  border:0;
-  border-radius:12px;
-  padding:14px;
-  font-size:14px;
-  font-weight:900;
+  margin-top:15px;
+  padding:13px;
+  border:1px solid #294047;
+  border-radius:11px;
+  background:#101d21;
+  color:white;
+  font-weight:700;
   cursor:pointer;
-  background:#00eaff;
-  color:#001014;
 }
 
-.gold .btn{
-  background:#ffd21c;
-  color:#171000;
-}
-
-.btn:active{
-  transform:scale(.98);
-}
-
-.selected{
-  border-color:#00eaff;
-  box-shadow:0 0 20px rgba(0,234,255,.08);
-}
-
-.gold.selected{
-  border-color:#ffd21c;
-  box-shadow:0 0 20px rgba(255,210,28,.08);
+.card.active .select-btn{
+  background:#1cc47d;
+  border-color:#1cc47d;
+  color:#04120c;
 }
 
 .section-title{
   font-size:18px;
-  font-weight:900;
-  margin:27px 0 12px;
+  margin:25px 0 12px;
 }
 
-.box{
-  background:#0d121b;
-  border:1px solid #252e3e;
-  border-radius:16px;
-  padding:18px;
+.step{
+  display:flex;
+  gap:12px;
+  padding:13px 0;
+  border-bottom:1px solid #172529;
+}
+
+.step:last-child{
+  border-bottom:0;
+}
+
+.num{
+  width:28px;
+  height:28px;
+  border-radius:50%;
+  background:#16352b;
+  color:#4ee6a3;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-size:12px;
+  font-weight:bold;
+  flex:none;
+}
+
+.step b{
+  font-size:13px;
+}
+
+.step span{
+  display:block;
+  color:#7e8c90;
+  font-size:12px;
+  margin-top:3px;
+  line-height:1.4;
+}
+
+.verify-box{
+  display:none;
+  margin-top:18px;
+}
+
+.verify-box.show{
+  display:block;
 }
 
 label{
   display:block;
   font-size:12px;
-  font-weight:bold;
-  color:#aab4c5;
+  color:#a9b5b8;
   margin-bottom:7px;
 }
 
 input{
   width:100%;
-  background:#080c13;
-  border:1px solid #293345;
-  color:#fff;
   padding:14px;
   border-radius:11px;
+  border:1px solid #293a3f;
+  background:#081013;
+  color:#fff;
   outline:none;
   font-size:14px;
-  margin-bottom:12px;
 }
 
 input:focus{
-  border-color:#00eaff;
+  border-color:#36d991;
 }
 
-.info{
-  background:#101722;
-  border:1px solid #263244;
-  border-radius:12px;
-  padding:13px;
-  margin-bottom:13px;
-  color:#8f9bad;
-  font-size:12px;
-  line-height:1.6;
+.main-btn{
+  width:100%;
+  margin-top:12px;
+  padding:14px;
+  border:0;
+  border-radius:11px;
+  background:#20cf84;
+  color:#03120b;
+  font-size:14px;
+  font-weight:800;
+  cursor:pointer;
 }
 
-.hidden{
+.main-btn:disabled{
+  opacity:.35;
+  cursor:not-allowed;
+}
+
+.note{
+  margin-top:12px;
+  padding:12px;
+  background:#101a1d;
+  border-radius:10px;
+  color:#78878b;
+  font-size:11px;
+  line-height:1.5;
+}
+
+.status{
   display:none;
-}
-
-.steps{
-  display:flex;
-  gap:11px;
-  margin-bottom:12px;
-}
-
-.step-num{
-  min-width:30px;
-  height:30px;
-  border-radius:50%;
-  background:#17202e;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color:#00eaff;
-  font-weight:900;
-  font-size:12px;
-}
-
-.step-text{
+  margin-top:15px;
+  padding:14px;
+  border-radius:11px;
+  background:#10241c;
+  border:1px solid #245b45;
+  color:#64e8ad;
   font-size:13px;
-  color:#9aa5b7;
-  line-height:1.45;
+  line-height:1.5;
 }
 
 .footer{
   text-align:center;
-  color:#5f6a7c;
+  color:#566467;
   font-size:11px;
-  margin-top:28px;
-  line-height:1.7;
+  padding:25px 0 5px;
 }
 
 .telegram{
   display:block;
   text-align:center;
-  margin-top:12px;
-  color:#00eaff;
-  font-size:12px;
+  margin-top:15px;
+  color:#54bfff;
   text-decoration:none;
-  font-weight:bold;
+  font-size:12px;
 }
 </style>
 </head>
 
 <body>
 
-<div class="topbar">
-  <div class="logo">FREE FIRE CARD</div>
+<header class="header">
+  <div class="logo">SUNNY 999</div>
   <div class="online">● ONLINE</div>
-</div>
+</header>
 
-<div class="container">
+<main class="container">
 
-  <div class="hero">
-    <div class="badge">PREMIUM CARD ACTIVATION</div>
-    <h1>DIAMOND & <span>GOLD CARD</span></h1>
+  <section class="hero">
+    <div class="badge">FREE FIRE PREMIUM CARD</div>
+    <h1>CARD ACTIVATION</h1>
     <p>
-      Select your card, complete the required payment verification,
-      then enter your activation code and Free Fire UID.
+      Select your card, complete the payment verification,
+      then enter your activation code.
     </p>
-  </div>
+  </section>
 
-  <!-- DIAMOND -->
+  <!-- DIAMOND CARD -->
   <div class="card" id="diamondCard">
-    <div class="card-title">💎 DIAMOND CARD ACTIVATE</div>
-    <div class="card-sub">Premium Diamond Card</div>
-    <div class="price">₹1999 <small>one time</small></div>
-    <button class="btn" onclick="selectCard('diamond')">
+    <div class="card-top">
+      <div class="icon">💎</div>
+      <div>
+        <h2>DIAMOND CARD ACTIVATE</h2>
+        <div class="price">₹1999</div>
+      </div>
+    </div>
+
+    <p>Premium Diamond Card activation service.</p>
+
+    <button class="select-btn" onclick="selectPlan('diamond')">
       SELECT DIAMOND CARD
     </button>
   </div>
 
-  <!-- GOLD -->
-  <div class="card gold" id="goldCard">
-    <div class="card-title">🟡 FREE FIRE GOLD CARD ACTIVATE</div>
-    <div class="card-sub">Premium Gold Card</div>
-    <div class="price">₹999 <small>one time</small></div>
-    <button class="btn" onclick="selectCard('gold')">
+  <!-- GOLD CARD -->
+  <div class="card" id="goldCard">
+    <div class="card-top">
+      <div class="icon">🟡</div>
+      <div>
+        <h2>FREE FIRE GOLD CARD ACTIVATE</h2>
+        <div class="price">₹999</div>
+      </div>
+    </div>
+
+    <p>Free Fire Gold Card activation service.</p>
+
+    <button class="select-btn" onclick="selectPlan('gold')">
       SELECT GOLD CARD
     </button>
   </div>
 
-  <!-- CODE SECTION -->
-  <div id="codeSection" class="hidden">
+  <div class="card verify-box" id="verifyBox">
 
-    <div class="section-title">🔐 Activation Code</div>
+    <h2 id="selectedTitle">Card Activation</h2>
 
-    <div class="box">
-
-      <div class="info">
-        Card select karne ke baad payment verification complete karo.
-        Approval ke baad mila hua 10-digit code yahan enter karo.
-      </div>
-
-      <label>10-DIGIT ACTIVATION CODE</label>
-      <input
-        id="code"
-        type="text"
-        inputmode="numeric"
-        maxlength="10"
-        placeholder="Enter 10-digit code"
-        oninput="this.value=this.value.replace(/[^0-9]/g,'')"
-      >
-
-      <button class="btn" onclick="verifyCode()">
-        CONTINUE
-      </button>
-
+    <div class="note">
+      First complete payment verification through Telegram.
+      After approval, enter the 10-digit code provided to you.
     </div>
+
+    <br>
+
+    <label>Activation Code</label>
+    <input
+      id="code"
+      type="text"
+      inputmode="numeric"
+      maxlength="10"
+      placeholder="Enter 10-digit code"
+      disabled
+    >
+
+    <button class="main-btn" onclick="openTelegram()">
+      VERIFY PAYMENT ON TELEGRAM
+    </button>
+
+    <button
+      class="main-btn"
+      id="processBtn"
+      onclick="processCard()"
+      disabled>
+      CONTINUE ACTIVATION
+    </button>
+
+    <div class="status" id="status"></div>
+
   </div>
 
-  <!-- UID SECTION -->
-  <div id="uidSection" class="hidden">
+  <h3 class="section-title">HOW IT WORKS</h3>
 
-    <div class="section-title">🎮 Free Fire Account</div>
+  <div class="card">
 
-    <div class="box">
-
-      <div class="info">
-        Code verify hone ke baad apna Free Fire UID enter karo.
-        Apna password kabhi enter mat karo.
-      </div>
-
-      <label>FREE FIRE UID</label>
-      <input
-        id="uid"
-        type="text"
-        inputmode="numeric"
-        placeholder="Enter your Free Fire UID"
-      >
-
-      <button class="btn" onclick="submitUID()">
-        SUBMIT & PROCESS
-      </button>
-
-    </div>
-  </div>
-
-  <!-- PROCESS -->
-  <div id="processSection" class="hidden">
-
-    <div class="section-title">⏳ Processing</div>
-
-    <div class="box">
-
-      <div class="info">
-        Your request has been submitted for processing.
-        Activation status will depend on successful payment
-        verification and the connected authorized activation service.
-      </div>
-
-      <div class="steps">
-        <div class="step-num">1</div>
-        <div class="step-text">
-          Payment verification
-        </div>
-      </div>
-
-      <div class="steps">
-        <div class="step-num">2</div>
-        <div class="step-text">
-          Activation code verification
-        </div>
-      </div>
-
-      <div class="steps">
-        <div class="step-num">3</div>
-        <div class="step-text">
-          Free Fire UID processing
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <div class="section-title">📌 HOW IT WORKS</div>
-
-  <div class="box">
-
-    <div class="steps">
-      <div class="step-num">1</div>
-      <div class="step-text">
-        Select Diamond Card or Gold Card.
+    <div class="step">
+      <div class="num">1</div>
+      <div>
+        <b>Select Card</b>
+        <span>Choose Diamond Card or Gold Card.</span>
       </div>
     </div>
 
-    <div class="steps">
-      <div class="step-num">2</div>
-      <div class="step-text">
-        Complete payment and submit the required proof.
+    <div class="step">
+      <div class="num">2</div>
+      <div>
+        <b>Payment Verification</b>
+        <span>Complete payment and submit the required proof through Telegram.</span>
       </div>
     </div>
 
-    <div class="steps">
-      <div class="step-num">3</div>
-      <div class="step-text">
-        After approval, receive your unique 10-digit code.
+    <div class="step">
+      <div class="num">3</div>
+      <div>
+        <b>Enter 10-Digit Code</b>
+        <span>Use the unique code provided after approval.</span>
       </div>
     </div>
 
-    <div class="steps">
-      <div class="step-num">4</div>
-      <div class="step-text">
-        Enter the code and your Free Fire UID.
+    <div class="step">
+      <div class="num">4</div>
+      <div>
+        <b>Enter Free Fire UID</b>
+        <span>Enter the account UID required for a legitimate activation service.</span>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="num">5</div>
+      <div>
+        <b>Processing</b>
+        <span>Your activation request will be processed when the connected activation service is available.</span>
       </div>
     </div>
 
   </div>
 
-  <a class="telegram" href="https://t.me/" target="_blank">
-    Telegram Support →
+  <div class="card" id="uidBox" style="display:none;">
+
+    <h2>Free Fire Account</h2>
+
+    <p style="margin:8px 0 15px;color:#89979b;font-size:12px;">
+      Enter your Free Fire UID.
+    </p>
+
+    <label>FREE FIRE UID</label>
+
+    <input
+      id="uid"
+      type="text"
+      inputmode="numeric"
+      maxlength="20"
+      placeholder="Enter your Free Fire UID"
+    >
+
+    <button class="main-btn" onclick="submitUID()">
+      SUBMIT ACTIVATION
+    </button>
+
+    <div class="status" id="uidStatus"></div>
+
+  </div>
+
+  <a class="telegram"
+     href="https://t.me/FreeFireCardPayBot"
+     target="_blank">
+     Need help? Contact payment verification bot →
   </a>
 
   <div class="footer">
-    FREE FIRE CARD ACTIVATE<br>
-    Manual verification • Secure code process<br>
-    Use only your own Free Fire UID.
+    © 2026 SUNNY 999 • Secure Manual Verification
   </div>
 
-</div>
+</main>
 
 <script>
 
-let selectedCard = "";
+let selectedPlan = "";
 
-function selectCard(type){
+function selectPlan(plan){
 
-  selectedCard = type;
+  selectedPlan = plan;
 
-  document.getElementById("diamondCard")
-    .classList.remove("selected");
+  document.getElementById("diamondCard").classList.remove("active");
+  document.getElementById("goldCard").classList.remove("active");
 
-  document.getElementById("goldCard")
-    .classList.remove("selected");
-
-  if(type === "diamond"){
-    document.getElementById("diamondCard")
-      .classList.add("selected");
+  if(plan === "diamond"){
+    document.getElementById("diamondCard").classList.add("active");
+    document.getElementById("selectedTitle").innerText =
+      "💎 Diamond Card — ₹1999";
   }
 
-  if(type === "gold"){
-    document.getElementById("goldCard")
-      .classList.add("selected");
+  if(plan === "gold"){
+    document.getElementById("goldCard").classList.add("active");
+    document.getElementById("selectedTitle").innerText =
+      "🟡 Gold Card — ₹999";
   }
 
-  document.getElementById("codeSection")
-    .classList.remove("hidden");
+  document.getElementById("verifyBox").classList.add("show");
 
-  document.getElementById("codeSection")
-    .scrollIntoView({
-      behavior:"smooth",
-      block:"center"
-    });
+  document.getElementById("verifyBox").scrollIntoView({
+    behavior:"smooth",
+    block:"center"
+  });
 }
 
-function verifyCode(){
 
-  const code = document.getElementById("code").value.trim();
+function openTelegram(){
 
-  if(!selectedCard){
+  if(!selectedPlan){
     alert("Please select a card first.");
     return;
   }
 
+  let planText =
+    selectedPlan === "diamond"
+    ? "Diamond Card ₹1999"
+    : "Free Fire Gold Card ₹999";
+
+  const message =
+    "I want to activate: " + planText;
+
+  const url =
+    "https://t.me/FreeFireCardPayBot?text=" +
+    encodeURIComponent(message);
+
+  window.open(url,"_blank");
+
+  /*
+    The activation code remains locked until
+    your real payment/backend approval system
+    authorizes the user.
+  */
+}
+
+
+function unlockCode(){
+
+  document.getElementById("code").disabled = false;
+  document.getElementById("processBtn").disabled = false;
+
+}
+
+
+document.getElementById("code").addEventListener("input", function(){
+
+  this.value = this.value.replace(/\D/g,"").slice(0,10);
+
+});
+
+
+function processCard(){
+
+  const code =
+    document.getElementById("code").value.trim();
+
   if(!/^\d{10}$/.test(code)){
-    alert("Please enter a valid 10-digit activation code.");
+    alert("Enter a valid 10-digit activation code.");
     return;
   }
 
-  document.getElementById("uidSection")
-    .classList.remove("hidden");
+  document.getElementById("uidBox").style.display = "block";
 
-  document.getElementById("uidSection")
-    .scrollIntoView({
-      behavior:"smooth",
-      block:"center"
-    });
+  document.getElementById("uidBox").scrollIntoView({
+    behavior:"smooth",
+    block:"center"
+  });
 }
+
 
 function submitUID(){
 
-  const uid = document.getElementById("uid").value.trim();
+  const uid =
+    document.getElementById("uid").value.trim();
 
-  if(!/^\d{6,15}$/.test(uid)){
-    alert("Please enter a valid Free Fire UID.");
+  if(!uid){
+    alert("Please enter your Free Fire UID.");
     return;
   }
 
-  document.getElementById("processSection")
-    .classList.remove("hidden");
+  const status =
+    document.getElementById("uidStatus");
 
-  document.getElementById("processSection")
-    .scrollIntoView({
-      behavior:"smooth",
-      block:"center"
-    });
+  status.style.display = "block";
+
+  status.innerHTML =
+    "✓ Request submitted.<br><br>" +
+    "Your UID has been received. " +
+    "Activation will only be completed through the connected authorized activation service.";
+
 }
 
 </script>
