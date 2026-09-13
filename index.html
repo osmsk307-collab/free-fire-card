@@ -179,7 +179,7 @@ DIAMOND CARD ACTIVATE
 </div>
 
 <div class="price">
-₹1999
+₹999
 </div>
 
 </div>
@@ -196,7 +196,7 @@ FREE FIRE GOLD CARD ACTIVATE
 </div>
 
 <div class="price">
-₹999
+₹499
 </div>
 
 </div>
@@ -238,7 +238,7 @@ CONTINUE
 <p class="muted">
 Selected Card:
 <b id="selectedPlan">
-DIAMOND CARD ACTIVATE — ₹1999
+DIAMOND CARD ACTIVATE — ₹999
 </b>
 </p>
 
@@ -341,18 +341,22 @@ card.dataset.plan;
 if(selectedPlan === "diamond"){
 
 selectedPlanText.textContent =
-"DIAMOND CARD ACTIVATE — ₹1999";
+"DIAMOND CARD ACTIVATE — ₹999";
 
 }else{
 
 selectedPlanText.textContent =
-"FREE FIRE GOLD CARD ACTIVATE — ₹999";
+"FREE FIRE GOLD CARD ACTIVATE — ₹499";
 
 }
 
 paymentBox.classList.add("hidden");
 
 unlocked = false;
+
+codeStatus.textContent = "";
+
+utrStatus.textContent = "";
 
 });
 
@@ -362,7 +366,7 @@ unlocked = false;
 code.addEventListener("input", () => {
 
 code.value =
-code.value.replace(/\D/g,"");
+code.value.replace(/\D/g,"").slice(0,10);
 
 });
 
@@ -370,7 +374,7 @@ code.value.replace(/\D/g,"");
 utr.addEventListener("input", () => {
 
 utr.value =
-utr.value.replace(/\D/g,"");
+utr.value.replace(/\D/g,"").slice(0,12);
 
 });
 
