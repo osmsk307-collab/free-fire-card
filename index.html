@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SUNNY 999 BOT - CARD ACTIVATION</title>
+<title>SUNNY 999 BOT - CC ACTIVATION</title>
 
 <style>
 *{box-sizing:border-box}
@@ -90,6 +90,10 @@ font-size:16px;
 outline:none;
 }
 
+input[type="file"]{
+padding:11px;
+}
+
 button,
 .telegram{
 width:100%;
@@ -149,12 +153,14 @@ border-radius:12px;
 margin-top:10px;
 font-size:13px;
 color:#ffd166;
+line-height:1.5;
 }
 
 .notice{
 border-left:3px solid #35d07f;
 padding-left:10px;
 }
+
 </style>
 </head>
 
@@ -163,19 +169,44 @@ padding-left:10px;
 <div class="container">
 
 <div class="brand">SUNNY 999 BOT</div>
-<div class="subtitle">CARD ACTIVATION</div>
+<div class="subtitle">CC ACTIVATION</div>
 
+
+<!-- INTRO -->
 
 <div class="box">
 
-<h2>1. Select Card</h2>
+<h2>💎 CC ACTIVATION</h2>
+
+<p class="muted">
+Aapne pehle payment karke CC purchase kar liya hai. ✅
+</p>
+
+<p class="muted">
+Ab apne purchased CC ko activate karne ke liye
+<strong>new activation payment</strong> complete karein.
+</p>
+
+<p class="muted notice">
+Pehle purchase ka payment dobara nahi karna hai.
+Ye payment sirf CC activation ke liye hai.
+</p>
+
+</div>
+
+
+<!-- CARD -->
+
+<div class="box">
+
+<h2>1. Select Your CC</h2>
 
 <div class="card active" data-plan="diamond">
 
 <div class="row">
 
 <div class="name">
-DIAMOND CARD ACTIVATE
+💎 DIAMOND CC
 </div>
 
 <div class="price">
@@ -192,7 +223,7 @@ DIAMOND CARD ACTIVATE
 <div class="row">
 
 <div class="name">
-FREE FIRE GOLD CARD ACTIVATE
+🪙 GOLD CC
 </div>
 
 <div class="price">
@@ -206,42 +237,18 @@ FREE FIRE GOLD CARD ACTIVATE
 </div>
 
 
+<!-- PAYMENT -->
+
 <div class="box">
 
-<h2>2. Enter Activation Code</h2>
+<h2>2. New Activation Payment</h2>
 
 <p class="muted">
-Enter the 10-digit code provided after your first purchase.
-</p>
-
-<input
-id="code"
-type="text"
-inputmode="numeric"
-maxlength="10"
-placeholder="10-digit code"
->
-
-<button id="continueBtn">
-CONTINUE
-</button>
-
-<div id="codeStatus" class="status"></div>
-
-</div>
-
-
-<div id="paymentBox" class="box hidden">
-
-<h2>3. Complete Payment</h2>
-
-<p class="muted">
-Selected Card:
+Selected CC:
 <b id="selectedPlan">
-DIAMOND CARD ACTIVATE — ₹999
+DIAMOND CC — ₹999
 </b>
 </p>
-
 
 <img
 src="IMG_20260911_222905.png"
@@ -249,23 +256,37 @@ class="qr"
 alt="Payment QR"
 >
 
-
 <div class="upi">
 UPI: sunny999bot@nyes
 </div>
 
-
 <p class="muted notice">
-Pay the exact amount shown above. After payment, enter your UTR and verify it on Telegram.
+Selected CC ka exact amount pay karein.
+Payment complete hone ke baad screenshot aur 12-digit UTR submit karein.
 </p>
 
+
+<label class="muted">
+Payment Screenshot
+</label>
+
+<input
+id="screenshot"
+type="file"
+accept="image/*"
+>
+
+
+<label class="muted" style="display:block;margin-top:14px;">
+12-Digit UTR
+</label>
 
 <input
 id="utr"
 type="text"
 inputmode="numeric"
 maxlength="12"
-placeholder="12-digit UTR"
+placeholder="Enter 12-digit UTR"
 >
 
 
@@ -283,13 +304,87 @@ VERIFY PAYMENT ON TELEGRAM
 </div>
 
 
+<!-- APPROVAL -->
+
 <div class="box">
 
-<h2>4. After Approval</h2>
+<h2>3. Admin Verification</h2>
 
 <p class="muted">
-After your payment is manually verified and approved, the activation process can continue with your Free Fire UID.
+Aapka payment screenshot aur UTR admin manually verify karega.
+Approval milne ke baad hi activation ka next step milega.
 </p>
+
+<p class="muted">
+Payment approve hone ke baad aapko activation code diya jayega.
+</p>
+
+</div>
+
+
+<!-- UID -->
+
+<div class="box hidden" id="uidBox">
+
+<h2>4. Free Fire UID</h2>
+
+<p class="muted">
+✅ Payment approved.
+</p>
+
+<p class="muted">
+Ab apni Free Fire UID enter karein.
+</p>
+
+<input
+id="uid"
+type="text"
+inputmode="numeric"
+maxlength="15"
+placeholder="Enter Free Fire UID"
+>
+
+<button id="uidBtn">
+SUBMIT UID
+</button>
+
+<div id="uidStatus" class="status"></div>
+
+</div>
+
+
+<!-- PROCESSING -->
+
+<div class="box hidden" id="processingBox">
+
+<h2>5. Activation Processing</h2>
+
+<div class="status">
+⏳ ACTIVATION PROCESSING...
+</div>
+
+<p class="muted">
+Your activation request is being processed.
+Please wait for the activation result.
+</p>
+
+</div>
+
+
+<!-- SUCCESS -->
+
+<div class="box hidden" id="successBox">
+
+<h2>6. Activation Status</h2>
+
+<p class="muted">
+Actual activation confirmation ke baad:
+</p>
+
+<div class="status"
+style="color:#35d07f;font-size:18px;font-weight:900;text-align:center;">
+✅ ACTIVATION SUCCESSFUL
+</div>
 
 </div>
 
@@ -299,31 +394,45 @@ After your payment is manually verified and approved, the activation process can
 <script>
 
 let selectedPlan = "diamond";
-let unlocked = false;
 
-const cards = document.querySelectorAll(".card");
-
-const code = document.getElementById("code");
-const utr = document.getElementById("utr");
-
-const continueBtn =
-document.getElementById("continueBtn");
-
-const paymentBox =
-document.getElementById("paymentBox");
+const cards =
+document.querySelectorAll(".card");
 
 const selectedPlanText =
 document.getElementById("selectedPlan");
 
-const codeStatus =
-document.getElementById("codeStatus");
+const screenshot =
+document.getElementById("screenshot");
 
-const utrStatus =
-document.getElementById("utrStatus");
+const utr =
+document.getElementById("utr");
 
 const verifyBtn =
 document.getElementById("verifyBtn");
 
+const utrStatus =
+document.getElementById("utrStatus");
+
+const uid =
+document.getElementById("uid");
+
+const uidBtn =
+document.getElementById("uidBtn");
+
+const uidBox =
+document.getElementById("uidBox");
+
+const uidStatus =
+document.getElementById("uidStatus");
+
+const processingBox =
+document.getElementById("processingBox");
+
+const successBox =
+document.getElementById("successBox");
+
+
+/* CARD SELECT */
 
 cards.forEach(card => {
 
@@ -341,35 +450,25 @@ card.dataset.plan;
 if(selectedPlan === "diamond"){
 
 selectedPlanText.textContent =
-"DIAMOND CARD ACTIVATE — ₹999";
+"DIAMOND CC — ₹999";
 
 }else{
 
 selectedPlanText.textContent =
-"FREE FIRE GOLD CARD ACTIVATE — ₹499";
+"GOLD CC — ₹499";
 
 }
 
-paymentBox.classList.add("hidden");
-
-unlocked = false;
-
-codeStatus.textContent = "";
-
 utrStatus.textContent = "";
 
-});
+verifyBtn.href = "#";
 
 });
 
-
-code.addEventListener("input", () => {
-
-code.value =
-code.value.replace(/\D/g,"").slice(0,10);
-
 });
 
+
+/* UTR */
 
 utr.addEventListener("input", () => {
 
@@ -379,41 +478,23 @@ utr.value.replace(/\D/g,"").slice(0,12);
 });
 
 
-continueBtn.addEventListener("click", () => {
-
-const value =
-code.value.trim();
-
-if(!/^\d{10}$/.test(value)){
-
-codeStatus.textContent =
-"Please enter a valid 10-digit activation code.";
-
-return;
-
-}
-
-unlocked = true;
-
-paymentBox.classList.remove("hidden");
-
-codeStatus.textContent =
-"Code format accepted. Complete payment below.";
-
-});
-
+/* TELEGRAM VERIFY */
 
 verifyBtn.addEventListener("click", (e) => {
 
-const codeValue =
-code.value.trim();
+const file =
+screenshot.files[0];
 
 const utrValue =
 utr.value.trim();
 
-if(!unlocked){
+if(!file){
 
 e.preventDefault();
+
+utrStatus.textContent =
+"Please upload your payment screenshot first.";
+
 return;
 
 }
@@ -429,18 +510,57 @@ return;
 
 }
 
+
+/*
+Existing Telegram flow preserved.
+
+The screenshot must currently be sent
+manually in Telegram after opening the bot.
+Backend screenshot forwarding can be
+connected later.
+*/
+
 const payload =
 "card_" +
 selectedPlan +
-"_" +
-codeValue +
-"_" +
+"_activation_" +
 utrValue;
-
 
 verifyBtn.href =
 "https://t.me/FreeFireCardPayBot?start=" +
 encodeURIComponent(payload);
+
+});
+
+
+/* UID */
+
+uid.addEventListener("input", () => {
+
+uid.value =
+uid.value.replace(/\D/g,"").slice(0,15);
+
+});
+
+
+uidBtn.addEventListener("click", () => {
+
+const uidValue =
+uid.value.trim();
+
+if(!uidValue){
+
+uidStatus.textContent =
+"Please enter your Free Fire UID.";
+
+return;
+
+}
+
+uidStatus.textContent =
+"UID submitted. Waiting for activation processing.";
+
+processingBox.classList.remove("hidden");
 
 });
 
