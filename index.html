@@ -90,10 +90,6 @@ font-size:16px;
 outline:none;
 }
 
-input[type="file"]{
-padding:11px;
-}
-
 button,
 .telegram{
 width:100%;
@@ -117,10 +113,6 @@ color:#06110b;
 .telegram{
 background:#238bd4;
 color:white;
-}
-
-.hidden{
-display:none;
 }
 
 .muted{
@@ -195,7 +187,7 @@ Ye payment sirf CC activation ke liye hai.
 </div>
 
 
-<!-- CARD -->
+<!-- CARD SELECT -->
 
 <div class="box">
 
@@ -262,24 +254,9 @@ UPI: sunny999bot@nyes
 
 <p class="muted notice">
 Selected CC ka exact amount pay karein.
-Payment complete hone ke baad screenshot aur 12-digit UTR submit karein.
+Payment complete hone ke baad apna
+<strong>12-digit UTR</strong> enter karein.
 </p>
-
-
-<label class="muted">
-Payment Screenshot
-</label>
-
-<input
-id="screenshot"
-type="file"
-accept="image/*"
->
-
-
-<label class="muted" style="display:block;margin-top:14px;">
-12-Digit UTR
-</label>
 
 <input
 id="utr"
@@ -288,7 +265,6 @@ inputmode="numeric"
 maxlength="12"
 placeholder="Enter 12-digit UTR"
 >
-
 
 <a
 id="verifyBtn"
@@ -311,80 +287,37 @@ VERIFY PAYMENT ON TELEGRAM
 <h2>3. Admin Verification</h2>
 
 <p class="muted">
-Aapka payment screenshot aur UTR admin manually verify karega.
-Approval milne ke baad hi activation ka next step milega.
+UTR submit karne ke baad Telegram bot mein
+<strong>payment screenshot</strong> bhejein.
 </p>
 
 <p class="muted">
-Payment approve hone ke baad aapko activation code diya jayega.
+Admin payment manually verify karega aur
+<strong>APPROVE / REJECT</strong> karega.
+</p>
+
+<p class="muted">
+Approval ke baad hi activation ka next step milega.
 </p>
 
 </div>
 
 
-<!-- UID -->
+<!-- NEXT STEP -->
 
-<div class="box hidden" id="uidBox">
+<div class="box">
 
-<h2>4. Free Fire UID</h2>
+<h2>4. After Approval</h2>
 
 <p class="muted">
-✅ Payment approved.
+✅ Payment approved hone ke baad aapko
+activation code diya jayega.
 </p>
 
 <p class="muted">
-Ab apni Free Fire UID enter karein.
+Uske baad Free Fire UID submit karke
+activation process continue hoga.
 </p>
-
-<input
-id="uid"
-type="text"
-inputmode="numeric"
-maxlength="15"
-placeholder="Enter Free Fire UID"
->
-
-<button id="uidBtn">
-SUBMIT UID
-</button>
-
-<div id="uidStatus" class="status"></div>
-
-</div>
-
-
-<!-- PROCESSING -->
-
-<div class="box hidden" id="processingBox">
-
-<h2>5. Activation Processing</h2>
-
-<div class="status">
-⏳ ACTIVATION PROCESSING...
-</div>
-
-<p class="muted">
-Your activation request is being processed.
-Please wait for the activation result.
-</p>
-
-</div>
-
-
-<!-- SUCCESS -->
-
-<div class="box hidden" id="successBox">
-
-<h2>6. Activation Status</h2>
-
-<p class="muted">
-Actual activation confirmation ke baad:
-</p>
-
-<div class="status"
-style="color:#35d07f;font-size:18px;font-weight:900;text-align:center;">
-✅ ACTIVATION SUCCESSFUL
-</div>
 
 </div>
 
@@ -398,38 +331,17 @@ let selectedPlan = "diamond";
 const cards =
 document.querySelectorAll(".card");
 
-const selectedPlanText =
-document.getElementById("selectedPlan");
-
-const screenshot =
-document.getElementById("screenshot");
-
 const utr =
 document.getElementById("utr");
+
+const selectedPlanText =
+document.getElementById("selectedPlan");
 
 const verifyBtn =
 document.getElementById("verifyBtn");
 
 const utrStatus =
 document.getElementById("utrStatus");
-
-const uid =
-document.getElementById("uid");
-
-const uidBtn =
-document.getElementById("uidBtn");
-
-const uidBox =
-document.getElementById("uidBox");
-
-const uidStatus =
-document.getElementById("uidStatus");
-
-const processingBox =
-document.getElementById("processingBox");
-
-const successBox =
-document.getElementById("successBox");
 
 
 /* CARD SELECT */
@@ -459,6 +371,8 @@ selectedPlanText.textContent =
 
 }
 
+utr.value = "";
+
 utrStatus.textContent = "";
 
 verifyBtn.href = "#";
@@ -468,7 +382,7 @@ verifyBtn.href = "#";
 });
 
 
-/* UTR */
+/* UTR ONLY NUMBERS */
 
 utr.addEventListener("input", () => {
 
@@ -482,29 +396,15 @@ utr.value.replace(/\D/g,"").slice(0,12);
 
 verifyBtn.addEventListener("click", (e) => {
 
-const file =
-screenshot.files[0];
-
 const utrValue =
 utr.value.trim();
-
-if(!file){
-
-e.preventDefault();
-
-utrStatus.textContent =
-"Please upload your payment screenshot first.";
-
-return;
-
-}
 
 if(!/^\d{12}$/.test(utrValue)){
 
 e.preventDefault();
 
 utrStatus.textContent =
-"Please enter your 12-digit UTR first.";
+"Please enter your valid 12-digit UTR first.";
 
 return;
 
@@ -512,12 +412,11 @@ return;
 
 
 /*
-Existing Telegram flow preserved.
-
-The screenshot must currently be sent
-manually in Telegram after opening the bot.
-Backend screenshot forwarding can be
-connected later.
+Existing Telegram flow:
+User submits UTR here.
+Telegram bot opens.
+User sends payment screenshot
+directly in the bot chat.
 */
 
 const payload =
@@ -529,38 +428,6 @@ utrValue;
 verifyBtn.href =
 "https://t.me/FreeFireCardPayBot?start=" +
 encodeURIComponent(payload);
-
-});
-
-
-/* UID */
-
-uid.addEventListener("input", () => {
-
-uid.value =
-uid.value.replace(/\D/g,"").slice(0,15);
-
-});
-
-
-uidBtn.addEventListener("click", () => {
-
-const uidValue =
-uid.value.trim();
-
-if(!uidValue){
-
-uidStatus.textContent =
-"Please enter your Free Fire UID.";
-
-return;
-
-}
-
-uidStatus.textContent =
-"UID submitted. Waiting for activation processing.";
-
-processingBox.classList.remove("hidden");
 
 });
 
